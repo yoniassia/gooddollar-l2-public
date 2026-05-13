@@ -1,0 +1,38 @@
+[Unit]
+Description=GoodDollar L2 Devnet — Anvil EVM (chain 42069) with state persistence
+After=network.target
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=opc
+Group=opc
+
+# State dump directory — must be writable by the service user
+WorkingDirectory=/home/opc/anvil-data
+
+ExecStart=/home/goodclaw/.foundry/bin/anvil \
+    --host 0.0.0.0 \
+    --port 8545 \
+    --chain-id 42069 \
+    --block-time 2 \
+    --accounts 10 \
+    --balance 10000 \
+    --dump-state /home/opc/anvil-data/state.json \
+    --state-interval 60
+
+# On crash: wait 5s then restart, preserving state on disk
+Restart=on-failure
+RestartSec=5
+
+# Send SIGTERM on stop — Anvil writes final state dump on clean exit
+KillSignal=SIGTERM
+TimeoutStopSec=15
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=anvil-devnet
+
+[Install]
+WantedBy=multi-user.target

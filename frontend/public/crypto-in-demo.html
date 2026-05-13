@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>eToro Crypto-In — Demo</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   RESET & FOUNDATIONS
+   ═══════════════════════════════════════════════════════════════ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg:        #0C1E2C;
+  --bg-card:   #132D42;
+  --bg-card2:  #1A3A52;
+  --green:     #00C853;
+  --green-dim: #00a344;
+  --green-bg:  rgba(0,200,83,.12);
+  --red:       #FF5252;
+  --amber:     #FFB300;
+  --text:      #FFFFFF;
+  --text2:     rgba(255,255,255,.7);
+  --text3:     rgba(255,255,255,.45);
+  --border:    rgba(255,255,255,.08);
+  --radius:    16px;
+  --radius-sm: 10px;
+  /* Good Wallet palette */
+  --gw-bg:     #0A0E27;
+  --gw-card:   #141836;
+  --gw-accent: #6C5CE7;
+  --gw-accent2:#00C853;
+}
+
+html, body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100%; width: 100%;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LAYOUT — phone frame
+   ═══════════════════════════════════════════════════════════════ */
+#app {
+  max-width: 430px; margin: 0 auto; height: 100%;
+  position: relative; overflow: hidden;
+}
+.screen {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  opacity: 0; transform: translateX(60px);
+  pointer-events: none;
+  transition: opacity .4s ease, transform .4s ease;
+  overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.screen.active {
+  opacity: 1; transform: translateX(0);
+  pointer-events: auto;
+}
+.screen.exit-left {
+  opacity: 0; transform: translateX(-60px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESTART BUTTON
+   ═══════════════════════════════════════════════════════════════ */
+#restart {
+  position: fixed; bottom: 12px; right: 12px; z-index: 9999;
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
+  color: var(--text2); font-size: 11px; padding: 6px 12px;
+  border-radius: 20px; cursor: pointer; backdrop-filter: blur(8px);
+  transition: all .2s;
+}
+#restart:hover { background: rgba(255,255,255,.18); color: #fff; }
+
+/* ═══════════════════════════════════════════════════════════════
+   SHARED COMPONENTS
+   ═══════════════════════════════════════════════════════════════ */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 12px; flex-shrink: 0;
+}
+.header-back {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,.08); border: none; color: #fff;
+  font-size: 18px; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; transition: background .2s;
+}
+.header-back:hover { background: rgba(255,255,255,.15); }
+.header-title { font-size: 17px; font-weight: 600; }
+.header-spacer { width: 36px; }
+
+.pad { padding: 0 20px; }
+
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 16px; border: none; border-radius: var(--radius);
+  font-family: inherit; font-size: 16px; font-weight: 600;
+  cursor: pointer; transition: all .2s; text-decoration: none;
+}
+.btn-primary {
+  background: var(--green); color: #000;
+}
+.btn-primary:hover { background: #00e05d; transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+.btn-secondary {
+  background: rgba(255,255,255,.08); color: #fff;
+  border: 1px solid rgba(255,255,255,.12);
+}
+.btn-secondary:hover { background: rgba(255,255,255,.14); }
+
+.card {
+  background: var(--bg-card); border-radius: var(--radius);
+  border: 1px solid var(--border); overflow: hidden;
+}
+.card-gw {
+  background: var(--gw-card); border-radius: var(--radius);
+  border: 1px solid rgba(108,92,231,.2);
+}
+
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 600; padding: 4px 10px;
+  border-radius: 20px;
+}
+.badge-green { background: var(--green-bg); color: var(--green); }
+
+.divider { height: 1px; background: var(--border); margin: 0 20px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   SCREEN 1 — eToro Portfolio
+   ═══════════════════════════════════════════════════════════════ */
+.s1-brand {
+  display: flex; align-items: center; gap: 10px;
+}
+.s1-logo {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--green); display: flex; align-items: center;
+  justify-content: center; font-weight: 800; font-size: 14px; color: #000;
+}
+.s1-brand-text { font-size: 18px; font-weight: 700; letter-spacing: -.3px; }
+.s1-brand-plus { color: var(--green); font-weight: 800; }
+
+.s1-balance {
+  text-align: center; padding: 28px 20px 24px;
+}
+.s1-balance-label { font-size: 13px; color: var(--text3); margin-bottom: 6px; }
+.s1-balance-amount { font-size: 38px; font-weight: 800; letter-spacing: -1px; }
+.s1-balance-change {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-top: 6px; font-size: 14px; font-weight: 600; color: var(--green);
+}
+
+.s1-actions {
+  display: flex; gap: 12px; padding: 0 20px 20px;
+}
+.s1-actions .btn { flex: 1; font-size: 14px; padding: 14px; }
+
+.s1-section-title {
+  font-size: 13px; font-weight: 600; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .8px;
+  padding: 16px 20px 10px;
+}
+
+.s1-holding {
+  display: flex; align-items: center; padding: 14px 20px;
+  gap: 14px; cursor: default;
+}
+.s1-holding-icon {
+  width: 42px; height: 42px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 700; flex-shrink: 0;
+}
+.s1-holding-info { flex: 1; }
+.s1-holding-name { font-size: 15px; font-weight: 600; }
+.s1-holding-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.s1-holding-value { text-align: right; }
+.s1-holding-usd { font-size: 15px; font-weight: 600; }
+.s1-holding-pnl { font-size: 12px; margin-top: 2px; }
+.pnl-pos { color: var(--green); }
+.pnl-neg { color: var(--red); }
+
+.s1-deposit-cta {
+  margin: 20px;
+  padding: 18px;
+  font-size: 16px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCREEN 2 — SSO Transition
+   ═══════════════════════════════════════════════════════════════ */
+.s2-center {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 32px;
+  padding: 40px;
+}
+.s2-logos {
+  display: flex; align-items: center; gap: 24px;
+}
+.s2-logo-circle {
+  width: 64px; height: 64px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; font-weight: 800;
+}
+.s2-arrow {
+  display: flex; gap: 4px;
+}
+.s2-arrow span {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green); opacity: .3;
+  animation: dotPulse 1.2s ease infinite;
+}
+.s2-arrow span:nth-child(2) { animation-delay: .2s; }
+.s2-arrow span:nth-child(3) { animation-delay: .4s; }
+@keyframes dotPulse {
+  0%, 60%, 100% { opacity: .2; transform: scale(.8); }
+  30% { opacity: 1; transform: scale(1.2); }
+}
+.s2-text { font-size: 18px; font-weight: 600; text-align: center; }
+.s2-sub { font-size: 13px; color: var(--text3); text-align: center; margin-top: -20px; }
+
+.s2-progress {
+  width: 200px; height: 3px; border-radius: 2px;
+  background: rgba(255,255,255,.1); overflow: hidden;
+}
+.s2-progress-bar {
+  height: 100%; background: var(--green); border-radius: 2px;
+  animation: progressFill 2s ease forwards;
+}
+@keyframes progressFill { from { width: 0; } to { width: 100%; } }
+
+/* ═══════════════════════════════════════════════════════════════
+   SCREEN 3 — Select Chain (Good Wallet)
+   ═══════════════════════════════════════════════════════════════ */
+.gw-screen { background: var(--gw-bg); }
+.gw-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 20px 4px;
+}
+.gw-logo {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: linear-gradient(135deg, #6C5CE7, #00C853);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; color: #fff;
+}
+.gw-brand { font-size: 16px; font-weight: 700; }
+.gw-brand span { color: var(--gw-accent); }
+
+.gw-poweredby {
+  font-size: 11px; color: var(--text3); text-align: center;
+  padding: 6px 0 0; display: flex; align-items: center;
+  justify-content: center; gap: 4px;
+}
+
+.s3-title { font-size: 22px; font-weight: 700; padding: 20px 20px 4px; }
+.s3-subtitle { font-size: 14px; color: var(--text2); padding: 0 20px 20px; }
+
+.chain-card {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px; margin: 0 20px 12px;
+  border-radius: var(--radius); cursor: pointer;
+  background: var(--gw-card); border: 1px solid rgba(255,255,255,.06);
+  transition: all .2s;
+}
+.chain-card:hover { border-color: var(--gw-accent); transform: translateY(-1px); }
+.chain-card:active { transform: translateY(0); }
+.chain-icon {
+  width: 48px; height: 48px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+}
+.chain-info { flex: 1; }
+.chain-name { font-size: 16px; font-weight: 600; }
+.chain-meta { font-size: 12px; color: var(--text3); margin-top: 3px; }
+.chain-arrow { color: var(--text3); font-size: 18px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   SCREEN 4 — Select Token
+   ═══════════════════════════════════════════════════════════════ */
+.token-card {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px; margin: 0 20px 12px;
+  border-radius: var(--radius); cursor: pointer;
+  background: var(--gw-card); border: 1px solid rgba(255,255,255,.06);
+  transition: all .2s;
+}
+.token-card:hover { border-color: var(--gw-accent); transform: translateY(-1px); }
+.token-icon {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700; flex-shrink: 0;
+}
+.token-info { flex: 1; }
+.token-name { font-size: 16px; font-weight: 600; }
+.token-limits { font-size: 12px; color: var(--text3); margin-top: 3px; }
+.token-arrow { color: var(--text3); font-size: 18px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   SCREEN 5 — Deposit Address
+   ═══════════════════════════════════════════════════════════════ */
+.s5-chain-token {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 12px 20px 0;
+  font-size: 14px; font-weight: 500; color: var(--text2);
+}
+.s5-chain-token .badge { margin-left: 4px; }
+
+.s5-qr-wrap {
+  display: flex; justify-content: center; padding: 24px 0 16px;
+}
+.s5-qr {
+  width: 180px; height: 180px; background: #fff;
+  border-radius: 16px; padding: 12px;
+  display: flex; align-items: center; justify-content: center;
+}
+.s5-qr canvas { width: 100% !important; height: 100% !important; }
+
+.s5-address-box {
+  margin: 0 20px; padding: 14px 16px;
+  background: rgba(255,255,255,.05); border-radius: var(--radius-sm);
+  border: 1px solid rgba(255,255,255,.08);
+  display: flex; align-items: center; gap: 10px;
+}
+.s5-address {
+  flex: 1; font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 14px; word-break: break-all; color: var(--text);
+}
+.s5-copy {
+  background: var(--gw-accent); border: none; color: #fff;
+  padding: 8px 14px; border-radius: 8px; font-size: 12px;
+  font-weight: 600; cursor: pointer; white-space: nowrap;
+  transition: all .2s; font-family: inherit;
+}
+.s5-copy:hover { filter: brightness(1.15); }
+.s5-copy.copied { background: var(--green); }
+
+.s5-walletconnect {
+  margin: 16px 20px; padding: 14px;
+  font-size: 14px;
+}
+.s5-wc-icon {
+  width: 22px; height: 22px; border-radius: 4px;
+  background: #3B99FC; display: inline-flex; align-items: center;
+  justify-content: center; font-size: 10px; font-weight: 800; color: #fff;
+}
+
+.s5-info {
+  margin: 16px 20px; padding: 14px;
+  background: rgba(255,179,0,.08); border: 1px solid rgba(255,179,0,.2);
+  border-radius: var(--radius-sm); display: flex; gap: 10px;
+}
+.s5-info-icon { font-size: 18px; flex-shrink: 0; }
+.s5-info-text { font-size: 13px; color: var(--amber); line-height: 1.5; }
+
+.s5-limits {
+  display: flex; justify-content: center; gap: 24px;
+  padding: 16px 20px;
+  font-size: 12px; color: var(--text3);
+}
+.s5-limits strong { color: var(--text2); }
+
+.s5-simulate {
+  margin: 12px 20px 24px; padding: 14px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCREEN 6 — Deposit Pending
+   ═══════════════════════════════════════════════════════════════ */
+.s6-amount-box {
+  text-align: center; padding: 28px 20px 20px;
+}
+.s6-amount { font-size: 34px; font-weight: 800; letter-spacing: -1px; }
+.s6-token-label { font-size: 14px; color: var(--text2); margin-top: 4px; }
+
+.s6-tracker {
+  margin: 0 20px; padding: 0;
+}
+.s6-step {
+  display: flex; gap: 14px; padding: 0 0 28px; position: relative;
+}
+.s6-step:last-child { padding-bottom: 0; }
+.s6-step::before {
+  content: ''; position: absolute; left: 17px; top: 40px;
+  width: 2px; bottom: 0; background: rgba(255,255,255,.08);
+}
+.s6-step:last-child::before { display: none; }
+.s6-step.completed::before { background: var(--green); }
+
+.s6-icon {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0; position: relative; z-index: 1;
+}
+.s6-step.completed .s6-icon {
+  background: var(--green-bg); color: var(--green);
+}
+.s6-step.active .s6-icon {
+  background: rgba(255,179,0,.12); color: var(--amber);
+  animation: pulse 2s ease infinite;
+}
+.s6-step.pending .s6-icon {
+  background: rgba(255,255,255,.06); color: var(--text3);
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,179,0,.3); }
+  50% { box-shadow: 0 0 0 8px rgba(255,179,0,0); }
+}
+
+.s6-step-info { flex: 1; padding-top: 6px; }
+.s6-step-title { font-size: 15px; font-weight: 600; }
+.s6-step.pending .s6-step-title { color: var(--text3); }
+.s6-step-detail { font-size: 12px; color: var(--text3); margin-top: 3px; }
+.s6-step.active .s6-step-detail { color: var(--amber); }
+
+.s6-txhash {
+  margin: 28px 20px 0; padding: 12px 16px;
+  background: rgba(255,255,255,.04); border-radius: var(--radius-sm);
+  font-size: 12px; color: var(--text3); text-align: center;
+}
+.s6-txhash a { color: var(--gw-accent); text-decoration: none; }
+
+/* ═══════════════════════════════════════════════════════════════
+   SCREEN 7 — Deposit Complete
+   ═══════════════════════════════════════════════════════════════ */
+.s7-center {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 16px;
+  padding: 40px 20px;
+}
+.s7-check {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: var(--green); display: flex; align-items: center;
+  justify-content: center; font-size: 40px;
+  animation: scaleIn .5s cubic-bezier(.175,.885,.32,1.275) forwards;
+  transform: scale(0);
+}
+@keyframes scaleIn { to { transform: scale(1); } }
+
+.s7-title { font-size: 24px; font-weight: 700; text-align: center; }
+.s7-subtitle { font-size: 15px; color: var(--text2); text-align: center; }
+
+.s7-summary {
+  width: 100%; margin-top: 16px;
+}
+.s7-row {
+  display: flex; justify-content: space-between; padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.s7-row:last-child { border-bottom: none; }
+.s7-label { font-size: 14px; color: var(--text3); }
+.s7-value { font-size: 14px; font-weight: 600; }
+
+.s7-buttons { width: 100%; display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   CONFETTI
+   ═══════════════════════════════════════════════════════════════ */
+.confetti-container {
+  position: fixed; inset: 0; pointer-events: none; z-index: 9998; overflow: hidden;
+}
+.confetti-piece {
+  position: absolute; width: 10px; height: 10px;
+  top: -20px; opacity: 0;
+  animation: confettiFall 3s ease forwards;
+}
+@keyframes confettiFall {
+  0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+@media (min-width: 480px) {
+  body { background: #060E15; }
+  #app {
+    border-left: 1px solid rgba(255,255,255,.06);
+    border-right: 1px solid rgba(255,255,255,.06);
+    box-shadow: 0 0 80px rgba(0,200,83,.05);
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ════════════════ SCREEN 1: eToro Portfolio ════════════════ -->
+  <div class="screen active" id="screen1">
+    <div class="header">
+      <div class="s1-brand">
+        <div class="s1-logo">e</div>
+        <div class="s1-brand-text">eToro <span class="s1-brand-plus">Plus</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--bg-card2);display:flex;align-items:center;justify-content:center;font-size:12px;">🔔</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6C5CE7,#00C853);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;">Y</div>
+      </div>
+    </div>
+
+    <div class="s1-balance">
+      <div class="s1-balance-label">Total Portfolio Value</div>
+      <div class="s1-balance-amount" id="portfolio-total">$47,283.54</div>
+      <div class="s1-balance-change">▲ +$1,247.30 (2.71%) today</div>
+    </div>
+
+    <div class="s1-actions">
+      <button class="btn btn-primary" onclick="goTo(2)" style="flex:1.2;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="#000" stroke-width="2.2" stroke-linecap="round"/></svg>
+        Deposit Crypto
+      </button>
+      <button class="btn btn-secondary" style="flex:1;">Withdraw</button>
+    </div>
+
+    <div class="divider"></div>
+    <div class="s1-section-title">Crypto Holdings</div>
+
+    <div id="holdings-list">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- ════════════════ SCREEN 2: SSO Transition ════════════════ -->
+  <div class="screen" id="screen2">
+    <div class="s2-center">
+      <div class="s2-logos">
+        <div class="s2-logo-circle" style="background:var(--green);color:#000;">e</div>
+        <div class="s2-arrow"><span></span><span></span><span></span></div>
+        <div class="s2-logo-circle" style="background:linear-gradient(135deg,#6C5CE7,#00C853);color:#fff;font-size:16px;">GW</div>
+      </div>
+      <div class="s2-text">Connecting to Good Wallet...</div>
+      <div class="s2-sub">Securely authenticating via eToro SSO</div>
+      <div class="s2-progress"><div class="s2-progress-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- ════════════════ SCREEN 3: Select Chain ════════════════ -->
+  <div class="screen gw-screen" id="screen3">
+    <div class="gw-header">
+      <div class="gw-logo">G</div>
+      <div class="gw-brand">Good<span>Wallet</span></div>
+    </div>
+    <div class="gw-poweredby">🔐 Secured by eToro SSO</div>
+
+    <div class="header" style="padding-top:8px;">
+      <button class="header-back" onclick="goTo(1)">←</button>
+      <div class="header-title">Deposit Crypto</div>
+      <div class="header-spacer"></div>
+    </div>
+
+    <div class="s3-title">Select Network</div>
+    <div class="s3-subtitle">Choose the blockchain you'll send from</div>
+
+    <div class="chain-card" onclick="selectChain('Ethereum', '~12 min', '~$2-8', '🔷')">
+      <div class="chain-icon" style="background:rgba(98,126,234,.15);font-size:26px;">🔷</div>
+      <div class="chain-info">
+        <div class="chain-name">Ethereum</div>
+        <div class="chain-meta">~12 min · Fee ~$2-8</div>
+      </div>
+      <div class="chain-arrow">›</div>
+    </div>
+
+    <div class="chain-card" onclick="selectChain('Polygon', '~5 min', '<$0.01', '🟣')">
+      <div class="chain-icon" style="background:rgba(130,71,229,.15);font-size:26px;">🟣</div>
+      <div class="chain-info">
+        <div class="chain-name">Polygon</div>
+        <div class="chain-meta">~5 min · Fee <$0.01</div>
+      </div>
+      <div class="chain-arrow">›</div>
+    </div>
+
+    <div class="chain-card" onclick="selectChain('Base', '~2 min', '<$0.10', '🔵')">
+      <div class="chain-icon" style="background:rgba(0,82,255,.15);font-size:26px;">🔵</div>
+      <div class="chain-info">
+        <div class="chain-name">Base</div>
+        <div class="chain-meta">~2 min · Fee <$0.10</div>
+      </div>
+      <div class="chain-arrow">›</div>
+    </div>
+  </div>
+
+  <!-- ════════════════ SCREEN 4: Select Token ════════════════ -->
+  <div class="screen gw-screen" id="screen4">
+    <div class="gw-header">
+      <div class="gw-logo">G</div>
+      <div class="gw-brand">Good<span>Wallet</span></div>
+    </div>
+
+    <div class="header" style="padding-top:8px;">
+      <button class="header-back" onclick="goTo(3)">←</button>
+      <div class="header-title">Select Token</div>
+      <div class="header-spacer"></div>
+    </div>
+
+    <div class="s3-title" id="s4-title">Tokens on Ethereum</div>
+    <div class="s3-subtitle">Choose which token you'll deposit</div>
+
+    <div id="token-list">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- ════════════════ SCREEN 5: Deposit Address ════════════════ -->
+  <div class="screen gw-screen" id="screen5">
+    <div class="gw-header">
+      <div class="gw-logo">G</div>
+      <div class="gw-brand">Good<span>Wallet</span></div>
+    </div>
+
+    <div class="header" style="padding-top:8px;">
+      <button class="header-back" onclick="goTo(4)">←</button>
+      <div class="header-title">Deposit Address</div>
+      <div class="header-spacer"></div>
+    </div>
+
+    <div class="s5-chain-token">
+      <span id="s5-token-label">USDC</span>
+      <span style="color:var(--text3);">on</span>
+      <span class="badge badge-green" id="s5-chain-label">Ethereum</span>
+    </div>
+
+    <div class="s5-qr-wrap">
+      <div class="s5-qr"><canvas id="qr-canvas"></canvas></div>
+    </div>
+
+    <div class="s5-address-box">
+      <div class="s5-address" id="deposit-addr">0x3C48a7B2E9F1D06c84A5bE73F9280dC4192eD9Ef</div>
+      <button class="s5-copy" id="copy-btn" onclick="copyAddress()">Copy</button>
+    </div>
+
+    <button class="btn btn-secondary s5-walletconnect" onclick="goTo(6)">
+      <span class="s5-wc-icon">W</span>
+      Or connect wallet via WalletConnect
+    </button>
+
+    <div class="s5-info">
+      <div class="s5-info-icon">⚠️</div>
+      <div class="s5-info-text" id="s5-warning">Only send <strong>USDC</strong> on <strong>Ethereum</strong> network to this address. Sending other tokens may result in permanent loss.</div>
+    </div>
+
+    <div class="s5-limits">
+      <span>Min: <strong id="s5-min">10 USDC</strong></span>
+      <span>Max: <strong id="s5-max">100,000 USDC</strong></span>
+    </div>
+
+    <button class="btn btn-primary s5-simulate" onclick="goTo(6)">
+      ▶ Simulate Deposit (1,500 USDC)
+    </button>
+  </div>
+
+  <!-- ════════════════ SCREEN 6: Deposit Pending ════════════════ -->
+  <div class="screen gw-screen" id="screen6">
+    <div class="gw-header">
+      <div class="gw-logo">G</div>
+      <div class="gw-brand">Good<span>Wallet</span></div>
+    </div>
+
+    <div class="header" style="padding-top:8px;">
+      <div class="header-spacer"></div>
+      <div class="header-title">Deposit In Progress</div>
+      <div class="header-spacer"></div>
+    </div>
+
+    <div class="s6-amount-box">
+      <div class="s6-amount">1,500 <span id="s6-token" style="font-size:22px;color:var(--text2);">USDC</span></div>
+      <div class="s6-token-label" id="s6-chain-label2">via Ethereum</div>
+    </div>
+
+    <div class="s6-tracker">
+      <div class="s6-step completed" id="step1">
+        <div class="s6-icon">✓</div>
+        <div class="s6-step-info">
+          <div class="s6-step-title">Transaction Detected</div>
+          <div class="s6-step-detail">Found in mempool · just now</div>
+        </div>
+      </div>
+      <div class="s6-step active" id="step2">
+        <div class="s6-icon">⏳</div>
+        <div class="s6-step-info">
+          <div class="s6-step-title">Confirming on Chain</div>
+          <div class="s6-step-detail" id="confirm-detail">2 / 12 confirmations</div>
+        </div>
+      </div>
+      <div class="s6-step pending" id="step3">
+        <div class="s6-icon">○</div>
+        <div class="s6-step-info">
+          <div class="s6-step-title">Compliance Screening</div>
+          <div class="s6-step-detail">AML & source-of-funds check</div>
+        </div>
+      </div>
+      <div class="s6-step pending" id="step4">
+        <div class="s6-icon">○</div>
+        <div class="s6-step-info">
+          <div class="s6-step-title">Crediting eToro Account</div>
+          <div class="s6-step-detail">Final step</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="s6-txhash">
+      Tx: <a href="#">0x8badf00d...3a7c</a> · <a href="#">View on Etherscan ↗</a>
+    </div>
+  </div>
+
+  <!-- ════════════════ SCREEN 7: Deposit Complete ════════════════ -->
+  <div class="screen" id="screen7">
+    <div class="s7-center">
+      <div class="s7-check">✓</div>
+      <div class="s7-title">Deposit Complete!</div>
+      <div class="s7-subtitle">Your crypto has been credited to your eToro account</div>
+
+      <div class="s7-summary card" style="padding:16px;">
+        <div class="s7-row">
+          <span class="s7-label">Amount</span>
+          <span class="s7-value" id="s7-amount">1,500 USDC</span>
+        </div>
+        <div class="s7-row">
+          <span class="s7-label">Credited as</span>
+          <span class="s7-value">$1,500.00 USD</span>
+        </div>
+        <div class="s7-row">
+          <span class="s7-label">Network</span>
+          <span class="s7-value" id="s7-chain">Ethereum</span>
+        </div>
+        <div class="s7-row">
+          <span class="s7-label">Duration</span>
+          <span class="s7-value">~14 min</span>
+        </div>
+        <div class="s7-row">
+          <span class="s7-label">eToro Ref</span>
+          <span class="s7-value" style="font-family:monospace;font-size:12px;">#ETX-789456</span>
+        </div>
+      </div>
+
+      <div class="s7-buttons">
+        <button class="btn btn-primary" onclick="viewOnEtoro()">View on eToro Portfolio</button>
+        <button class="btn btn-secondary" onclick="goTo(1)">Done</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<button id="restart" onclick="restart()">↻ Restart Demo</button>
+
+<!-- ════════════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ════════════════════════════════════════════════════════════════ -->
+<script>
+// ─── STATE ────────────────────────────────────────────────────
+let currentScreen = 1;
+let selectedChain = 'Ethereum';
+let selectedChainEmoji = '🔷';
+let selectedToken = 'USDC';
+let depositCredited = false;
+let animationTimer = null;
+
+const holdings = [
+  { symbol:'BTC',  name:'Bitcoin',  amount:'0.45 BTC',  usd:'$28,350.00', pnl:'+4.2%', color:'#F7931A', icon:'₿' },
+  { symbol:'ETH',  name:'Ethereum', amount:'4.2 ETH',   usd:'$14,280.00', pnl:'+2.8%', color:'#627EEA', icon:'Ξ' },
+  { symbol:'USDC', name:'USD Coin', amount:'3,153.54 USDC', usd:'$3,153.54', pnl:'0.0%', color:'#2775CA', icon:'$' },
+  { symbol:'SOL',  name:'Solana',   amount:'12 SOL',    usd:'$1,500.00',  pnl:'-1.3%', color:'#9945FF', icon:'◎' },
+];
+
+const chainTokens = {
+  Ethereum: [
+    { symbol:'ETH',  name:'Ether',    icon:'Ξ', color:'#627EEA', min:'0.005 ETH', max:'50 ETH' },
+    { symbol:'USDC', name:'USD Coin', icon:'$', color:'#2775CA', min:'10 USDC',   max:'100,000 USDC' },
+    { symbol:'USDT', name:'Tether',   icon:'₮', color:'#26A17B', min:'10 USDT',   max:'100,000 USDT' },
+  ],
+  Polygon: [
+    { symbol:'USDC', name:'USD Coin', icon:'$', color:'#2775CA', min:'10 USDC',   max:'100,000 USDC' },
+    { symbol:'USDT', name:'Tether',   icon:'₮', color:'#26A17B', min:'10 USDT',   max:'100,000 USDT' },
+  ],
+  Base: [
+    { symbol:'ETH',  name:'Ether',    icon:'Ξ', color:'#627EEA', min:'0.005 ETH', max:'50 ETH' },
+    { symbol:'USDC', name:'USD Coin', icon:'$', color:'#2775CA', min:'10 USDC',   max:'100,000 USDC' },
+  ],
+};
+
+// ─── INIT ─────────────────────────────────────────────────────
+renderHoldings();
+
+function renderHoldings() {
+  const el = document.getElementById('holdings-list');
+  el.innerHTML = holdings.map(h => {
+    const pnlClass = h.pnl.startsWith('+') ? 'pnl-pos' : h.pnl.startsWith('-') ? 'pnl-neg' : '';
+    return `<div class="s1-holding">
+      <div class="s1-holding-icon" style="background:${h.color}22;color:${h.color}">${h.icon}</div>
+      <div class="s1-holding-info">
+        <div class="s1-holding-name">${h.name}</div>
+        <div class="s1-holding-sub">${h.amount}</div>
+      </div>
+      <div class="s1-holding-value">
+        <div class="s1-holding-usd">${h.usd}</div>
+        <div class="s1-holding-pnl ${pnlClass}">${h.pnl}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────
+function goTo(n) {
+  if (n === currentScreen) return;
+  clearTimeout(animationTimer);
+
+  const prev = document.getElementById('screen' + currentScreen);
+  const next = document.getElementById('screen' + n);
+
+  // direction
+  const goingForward = n > currentScreen;
+  prev.classList.remove('active');
+  prev.classList.add(goingForward ? 'exit-left' : '');
+
+  next.style.transform = goingForward ? 'translateX(60px)' : 'translateX(-60px)';
+  next.offsetHeight; // force reflow
+  next.classList.add('active');
+  next.classList.remove('exit-left');
+
+  setTimeout(() => { prev.classList.remove('exit-left'); prev.style.transform = ''; }, 450);
+
+  currentScreen = n;
+
+  // screen-specific logic
+  if (n === 2) {
+    // auto-advance after 2s
+    animationTimer = setTimeout(() => goTo(3), 2200);
+  }
+  if (n === 6) {
+    startDepositAnimation();
+  }
+}
+
+// ─── CHAIN SELECTION ──────────────────────────────────────────
+function selectChain(chain, time, fee, emoji) {
+  selectedChain = chain;
+  selectedChainEmoji = emoji;
+  document.getElementById('s4-title').textContent = 'Tokens on ' + chain;
+  renderTokens();
+  goTo(4);
+}
+
+function renderTokens() {
+  const tokens = chainTokens[selectedChain] || [];
+  const el = document.getElementById('token-list');
+  el.innerHTML = tokens.map(t => `
+    <div class="token-card" onclick="selectToken('${t.symbol}','${t.min}','${t.max}')">
+      <div class="token-icon" style="background:${t.color}22;color:${t.color}">${t.icon}</div>
+      <div class="token-info">
+        <div class="token-name">${t.symbol} <span style="color:var(--text3);font-weight:400;font-size:13px;">${t.name}</span></div>
+        <div class="token-limits">Min: ${t.min} · Max: ${t.max}</div>
+      </div>
+      <div class="token-arrow">›</div>
+    </div>
+  `).join('');
+}
+
+// ─── TOKEN SELECTION ──────────────────────────────────────────
+function selectToken(symbol, min, max) {
+  selectedToken = symbol;
+  document.getElementById('s5-token-label').textContent = symbol;
+  document.getElementById('s5-chain-label').textContent = selectedChain;
+  document.getElementById('s5-min').textContent = min;
+  document.getElementById('s5-max').textContent = max;
+  document.getElementById('s5-warning').innerHTML = `Only send <strong>${symbol}</strong> on <strong>${selectedChain}</strong> network to this address. Sending other tokens may result in permanent loss.`;
+  drawQR();
+  goTo(5);
+}
+
+// ─── QR CODE (simple pixel art — no dependencies) ─────────
+function drawQR() {
+  const canvas = document.getElementById('qr-canvas');
+  const ctx = canvas.getContext('2d');
+  const size = 156;
+  canvas.width = size; canvas.height = size;
+  const cellSize = 6;
+  const grid = Math.floor(size / cellSize);
+
+  // deterministic pseudo-random from address
+  let seed = 0x3C48;
+  function rand() { seed = (seed * 16807 + 0) % 2147483647; return (seed & 1); }
+
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = '#000';
+
+  // corners (finder patterns)
+  function drawFinder(x, y) {
+    for (let r = 0; r < 7; r++) {
+      for (let c = 0; c < 7; c++) {
+        const ring = Math.min(r, c, 6-r, 6-c);
+        if (ring === 0 || ring === 2) {
+          ctx.fillRect((x+c)*cellSize, (y+r)*cellSize, cellSize, cellSize);
+        }
+      }
+    }
+  }
+  drawFinder(0, 0);
+  drawFinder(grid-7, 0);
+  drawFinder(0, grid-7);
+
+  // data area
+  for (let r = 0; r < grid; r++) {
+    for (let c = 0; c < grid; c++) {
+      // skip finder areas
+      if ((r < 8 && c < 8) || (r < 8 && c > grid-9) || (r > grid-9 && c < 8)) continue;
+      if (rand()) {
+        ctx.fillRect(c*cellSize, r*cellSize, cellSize, cellSize);
+      }
+    }
+  }
+}
+
+// ─── COPY ADDRESS ─────────────────────────────────────────────
+function copyAddress() {
+  const addr = document.getElementById('deposit-addr').textContent;
+  navigator.clipboard.writeText(addr).catch(() => {});
+  const btn = document.getElementById('copy-btn');
+  btn.textContent = 'Copied!';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+}
+
+// ─── DEPOSIT ANIMATION ───────────────────────────────────────
+function startDepositAnimation() {
+  // Update labels
+  document.getElementById('s6-token').textContent = selectedToken;
+  document.getElementById('s6-chain-label2').textContent = 'via ' + selectedChain;
+
+  // Reset steps
+  setStep(1, 'completed', '✓', 'Found in mempool · just now');
+  setStep(2, 'active', '⏳', '2 / 12 confirmations');
+  setStep(3, 'pending', '○', 'AML & source-of-funds check');
+  setStep(4, 'pending', '○', 'Final step');
+
+  let confirmations = 2;
+
+  // Simulate confirmations
+  const confInterval = setInterval(() => {
+    confirmations += 2;
+    if (confirmations >= 12) {
+      clearInterval(confInterval);
+      setStep(2, 'completed', '✓', '12 / 12 confirmations · confirmed');
+      // Start compliance
+      setTimeout(() => {
+        setStep(3, 'active', '⏳', 'Screening in progress...');
+        setTimeout(() => {
+          setStep(3, 'completed', '✓', 'Approved · low risk');
+          // Credit
+          setTimeout(() => {
+            setStep(4, 'active', '⏳', 'Crediting $1,500.00...');
+            setTimeout(() => {
+              setStep(4, 'completed', '✓', 'Credited to eToro account');
+              setTimeout(() => goTo(7), 800);
+              depositCredited = true;
+            }, 1000);
+          }, 500);
+        }, 1500);
+      }, 600);
+    } else {
+      document.getElementById('confirm-detail').textContent = confirmations + ' / 12 confirmations';
+    }
+  }, 700);
+}
+
+function setStep(n, state, icon, detail) {
+  const el = document.getElementById('step' + n);
+  el.className = 's6-step ' + state;
+  el.querySelector('.s6-icon').textContent = icon;
+  el.querySelector('.s6-step-detail').textContent = detail;
+}
+
+// ─── SCREEN 7 CONFETTI ───────────────────────────────────────
+const observer = new MutationObserver(() => {
+  if (document.getElementById('screen7').classList.contains('active')) {
+    showConfetti();
+    // update summary
+    document.getElementById('s7-amount').textContent = '1,500 ' + selectedToken;
+    document.getElementById('s7-chain').textContent = selectedChain;
+  }
+});
+observer.observe(document.getElementById('screen7'), { attributes: true, attributeFilter: ['class'] });
+
+function showConfetti() {
+  const container = document.createElement('div');
+  container.className = 'confetti-container';
+  document.body.appendChild(container);
+  const colors = ['#00C853','#6C5CE7','#FFB300','#FF5252','#2196F3','#E040FB'];
+  for (let i = 0; i < 60; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDelay = Math.random() * 1.5 + 's';
+    piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+    piece.style.width = (6 + Math.random() * 8) + 'px';
+    piece.style.height = (6 + Math.random() * 8) + 'px';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    container.appendChild(piece);
+  }
+  setTimeout(() => container.remove(), 4000);
+}
+
+// ─── VIEW ON ETORO (updated balance) ─────────────────────────
+function viewOnEtoro() {
+  if (depositCredited) {
+    holdings[2].amount = '4,653.54 USDC';
+    holdings[2].usd = '$4,653.54';
+    document.getElementById('portfolio-total').textContent = '$48,783.54';
+    renderHoldings();
+  }
+  goTo(1);
+}
+
+// ─── RESTART ──────────────────────────────────────────────────
+function restart() {
+  depositCredited = false;
+  holdings[2].amount = '3,153.54 USDC';
+  holdings[2].usd = '$3,153.54';
+  document.getElementById('portfolio-total').textContent = '$47,283.54';
+  renderHoldings();
+  // Reset all screens
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active', 'exit-left');
+    s.style.transform = '';
+  });
+  document.getElementById('screen1').classList.add('active');
+  currentScreen = 1;
+}
+</script>
+
+</body>
+</html>

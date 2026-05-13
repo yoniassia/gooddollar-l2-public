@@ -1,0 +1,27 @@
+{
+  "name": "gooddollar-l2",
+  "version": "0.2.0",
+  "private": true,
+  "description": "GoodDollar Layer 2 — DeFi protocol for universal basic income",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yoniassia/gooddollar-l2"
+  },
+  "workspaces": [
+    "frontend",
+    "sdk"
+  ],
+  "scripts": {
+    "build:contracts": "forge build",
+    "test:contracts": "forge test -vvv",
+    "coverage": "forge coverage --ir-minimum --report summary",
+    "build:frontend": "cd frontend && npm run build",
+    "build:sdk": "cd sdk && npm run build",
+    "build": "npm run build:contracts && npm run build:sdk && npm run build:frontend",
+    "test": "npm run test:contracts",
+    "health": "bash scripts/health-check.sh"
+  },
+  "dependencies": {
+    "playwright": "^1.58.2"
+  }
+}

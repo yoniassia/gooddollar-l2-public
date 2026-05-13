@@ -1,0 +1,5 @@
+{
+  "args": "--no-sandbox --disable-gpu --disable-dev-shm-usage --disable-software-rasterizer",
+  "executablePath": "/home/goodclaw/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+  "defaultTimeout": 90000
+}

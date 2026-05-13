@@ -1,0 +1,29 @@
+{
+  "name": "@gooddollar/rpc-balancer",
+  "version": "0.2.0",
+  "description": "RPC load balancer & health-aware proxy for GoodDollar L2 — distributes requests across multiple upstream RPC nodes with failover, rate limiting, and metrics",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn src/index.ts",
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ethers": "^6.11.0",
+    "pino": "^8.19.0",
+    "dotenv": "^16.4.1",
+    "http-proxy-middleware": "^3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "@types/node": "^20.11.0",
+    "@types/express": "^4.17.21",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.0",
+    "ts-jest": "^29.1.0"
+  }
+}

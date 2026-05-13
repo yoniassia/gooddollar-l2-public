@@ -1,0 +1,23 @@
+{
+  "name": "@gooddollar/liquidator-bot",
+  "version": "0.2.0",
+  "description": "Liquidation bot for GoodLend and GoodStable — monitors undercollateralized positions and executes liquidations",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn src/index.ts",
+    "test": "jest"
+  },
+  "dependencies": {
+    "ethers": "^6.11.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "ts-node-dev": "^2.0.0",
+    "@types/node": "^20.11.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "@types/jest": "^29.5.11"
+  }
+}

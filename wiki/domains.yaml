@@ -1,0 +1,154 @@
+# GoodDollar Complete Knowledge Domains
+domains:
+  gooddollar_protocol:
+    title: "GoodDollar Protocol"
+    icon: "🌍"
+    queries:
+      - "GoodDollar UBI protocol"
+      - "G$ token distribution claims"
+    keywords:
+      - gooddollar
+      - UBI
+      - G$
+      - claim
+      - identity
+      - verification
+      - protocol
+      - celo
+      - fuse
+
+  l2_chain:
+    title: "GoodDollar L2 Chain"
+    icon: "⛓️"
+    queries:
+      - "OP Stack L2 chain rollup"
+      - "sequencer batcher devnet"
+    keywords:
+      - L2
+      - chain
+      - op-stack
+      - rollup
+      - sequencer
+      - anvil
+      - devnet
+
+  defi_protocols:
+    title: "DeFi Protocols"
+    icon: "🔄"
+    queries:
+      - "GoodSwap DEX AMM"
+      - "perpetual futures prediction markets"
+      - "lending stablecoin synthetic stocks"
+    keywords:
+      - swap
+      - perps
+      - predict
+      - lend
+      - stable
+      - stocks
+      - AMM
+      - DEX
+      - futures
+      - oracle
+      - gUSD
+
+  ubi_economics:
+    title: "UBI Fee System & Tokenomics"
+    icon: "💚"
+    queries:
+      - "UBI fee splitter 33%"
+      - "tokenomics supply staking"
+    keywords:
+      - UBI
+      - fee
+      - splitter
+      - tokenomics
+      - staking
+      - reserve
+      - distribution
+
+  smart_contracts:
+    title: "Smart Contracts"
+    icon: "📜"
+    queries:
+      - "solidity contracts foundry"
+      - "deploy upgrade proxy"
+    keywords:
+      - contract
+      - solidity
+      - foundry
+      - forge
+      - deploy
+      - upgrade
+      - test
+
+  wallet:
+    title: "Good Wallet"
+    icon: "💰"
+    queries:
+      - "wallet MPC social login"
+      - "swap bridge send receive"
+    keywords:
+      - wallet
+      - MPC
+      - sodot
+      - swap
+      - bridge
+      - lifi
+      - web3auth
+
+  frontend:
+    title: "Frontend & UI"
+    icon: "🎨"
+    queries:
+      - "frontend Next.js wagmi"
+    keywords:
+      - frontend
+      - next.js
+      - wagmi
+      - rainbowkit
+      - UI
+      - page
+      - component
+
+  infrastructure:
+    title: "Infrastructure & DevOps"
+    icon: "🏗️"
+    queries:
+      - "server deployment PM2"
+    keywords:
+      - server
+      - deploy
+      - pm2
+      - nginx
+      - VPS
+      - caddy
+      - cloudflare
+
+  agents:
+    title: "AI Agent System"
+    icon: "🤖"
+    queries:
+      - "Paperclip AI agents autobuilder"
+    keywords:
+      - agent
+      - paperclip
+      - autobuilder
+      - AI
+      - orchestration
+      - memclaw
+
+  gas_and_security:
+    title: "Gas Pricing & Security"
+    icon: "🔒"
+    queries:
+      - "gas price hardcoded gwei"
+      - "security audit"
+    keywords:
+      - gas
+      - gwei
+      - gasPrice
+      - maxFeePerGas
+      - security
+      - audit
+      - CSP

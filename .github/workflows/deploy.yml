@@ -1,0 +1,90 @@
+name: Deploy to Devnet
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: 'Git tag to deploy'
+        required: false
+        type: string
+        default: ''
+      version:
+        description: 'Version being deployed'
+        required: false
+        type: string
+        default: ''
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Git tag to deploy (leave empty for latest main)'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  deploy:
+    name: Deploy to Devnet
+    runs-on: ubuntu-latest
+    environment: devnet
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: goodclaw
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            export PATH="/home/goodclaw/.foundry/bin:/home/goodclaw/.nvm/versions/node/v22.22.1/bin:$PATH"
+            cd /home/goodclaw/gooddollar-l2
+
+            echo "=== Pulling latest code ==="
+            git fetch --all --tags
+            if [ -n "${{ inputs.tag }}" ]; then
+              git checkout "${{ inputs.tag }}"
+            else
+              git pull origin main
+            fi
+
+            echo "=== Building contracts ==="
+            forge build
+
+            echo "=== Deploying contracts ==="
+            forge script script/Deploy.s.sol \
+              --rpc-url http://localhost:8545 \
+              --broadcast \
+              --private-key $DEVNET_DEPLOYER_KEY || echo "Deploy script skipped (no changes or not configured)"
+
+            echo "=== Rebuilding frontend ==="
+            cd frontend
+            npm ci --prefer-offline
+            npm run build
+            cd ..
+
+            echo "=== Rebuilding SDK ==="
+            cd sdk
+            npm ci --prefer-offline
+            npm run build
+            cd ..
+
+            echo "=== Restarting services ==="
+            pm2 restart goodswap 2>/dev/null || true
+            pm2 restart block-watcher-qa 2>/dev/null || true
+
+            echo "=== Running health checks ==="
+            sleep 5
+            bash scripts/health-check.sh || echo "⚠️ Health check had warnings"
+
+            echo "=== Deploy complete: v${{ inputs.version || 'latest' }} ==="
+
+      - name: Post deployment status
+        if: always()
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** ${{ inputs.version || 'latest main' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag:** ${{ inputs.tag || 'N/A' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment:** devnet" >> $GITHUB_STEP_SUMMARY
+          echo "- **Frontend:** https://goodswap.goodclaw.org" >> $GITHUB_STEP_SUMMARY
+          echo "- **Explorer:** https://explorer.goodclaw.org" >> $GITHUB_STEP_SUMMARY

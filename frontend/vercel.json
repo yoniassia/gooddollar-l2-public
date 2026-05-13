@@ -1,0 +1,1 @@
+{"github":{"silent":true},"installCommand":"npm install","buildCommand":"npx next build","outputDirectory":".next","framework":"nextjs","rewrites":[]}
