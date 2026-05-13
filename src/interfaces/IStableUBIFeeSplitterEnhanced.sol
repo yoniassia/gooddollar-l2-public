@@ -12,4 +12,12 @@ interface IStableUBIFeeSplitterEnhanced {
         address token,
         bytes32 ilk
     ) external returns (uint256 ubiShare, uint256 protocolShare, uint256 dAppShare);
+
+    function splitMintingFee(
+        uint256 totalFee,
+        address dAppRecipient,
+        address token,
+        address user,
+        string calldata direction
+    ) external returns (uint256 ubiShare, uint256 protocolShare, uint256 dAppShare);
 }

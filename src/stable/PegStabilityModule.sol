@@ -22,23 +22,10 @@ pragma solidity ^0.8.20;
  */
 
 import "./interfaces/IGoodStable.sol";
+import "../interfaces/IStableUBIFeeSplitterEnhanced.sol";
 
 /// @dev Alias for readability — IgUSD has all needed methods
 interface IgUSDMinter is IgUSD {}
-
-/**
- * @notice Enhanced UBIFeeSplitter interface for better minting fee tracking.
- *         Only implemented by StableUBIFeeSplitter, not the standard UBIFeeSplitter.
- */
-interface IStableUBIFeeSplitterEnhanced {
-    function splitMintingFee(
-        uint256 totalFee,
-        address dAppRecipient,
-        address token,
-        address user,
-        string calldata direction
-    ) external returns (uint256 ubiShare, uint256 protocolShare, uint256 dAppShare);
-}
 
 interface IUSDC {
     function transferFrom(address from, address to, uint256 amount) external returns (bool);

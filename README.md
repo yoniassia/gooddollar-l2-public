@@ -1,5 +1,7 @@
 # GoodDollar L2 — The UBI Chain
 
+> **Public sanitized release:** this repository is a public-safe source mirror. Runtime secrets, local `.env` files, build/cache/broadcast artifacts, Anvil state, generated databases, and internal automation/test-result artifacts were intentionally excluded before publication. This is prototype/devnet software and is **not audited for mainnet funds**.
+
 > An OP Stack L2 where every transaction funds universal basic income for verified humans.
 
 🌐 **Live Demo:** [goodclaw.org](https://goodclaw.org) · **GoodSwap:** [goodswap.goodclaw.org](https://goodswap.goodclaw.org) · **Dashboard:** [paperclip.goodclaw.org](https://paperclip.goodclaw.org)

@@ -64,7 +64,7 @@ contract SyntheticAssetFactory {
     /**
      * @notice Deploy a new SyntheticAsset token for a stock.
      * @param ticker Trading symbol (e.g., "AAPL")
-     * @param assetName Full name (e.g., "Apple Inc. — Synthetic")
+     * @param assetName Full name (e.g., unicode"Apple Inc. — Synthetic")
      * @param vault CollateralVault address (will be the sole minter)
      * @return asset Address of the deployed SyntheticAsset
      */

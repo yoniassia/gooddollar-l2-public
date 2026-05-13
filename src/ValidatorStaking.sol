@@ -64,6 +64,7 @@ contract ValidatorStaking {
     error UnbondingAlreadyPending();
     error UnbondingNotReady(uint256 readyAt, uint256 currentTime);
     error NoUnbondingRequest();
+    error TransferFailed();
 
     modifier onlyAdmin() {
         if (msg.sender != admin) revert NotAdmin();
@@ -91,7 +92,7 @@ contract ValidatorStaking {
     function stake(uint256 amount, string calldata name, string calldata endpoint) external {
         if (amount < MIN_STAKE) revert BelowMinStake();
 
-        goodDollar.transferFrom(msg.sender, address(this), amount);
+        if (!goodDollar.transferFrom(msg.sender, address(this), amount)) revert TransferFailed();
 
         Validator storage v = validators[msg.sender];
         if (!v.isActive) {
